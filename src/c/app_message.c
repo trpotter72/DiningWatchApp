@@ -1,7 +1,21 @@
+/*
+
+app_message.c
+
+this segment of code is responsible for the portion of the app which will run on the 
+Pebble smart watch. Should function as follows:
+	Initializes data and window system
+	Waits for 'status' message from phone to signal complemetary app is running
+	Asks user when they are eating and sends the appropriate request to the phone
+	Creates windows and panes from received formatted CSV string
+*/
+
 #include <pebble.h>
+#include <stdlib.h>
+#include "StringSplitting.h"
 
 static Window *s_window;	
-char[2048] s_menu_data = '';
+static char* s_menu_data;
 
 // Keys for AppMessage Dictionary
 // These should correspond to the values you defined in appinfo.json/Settings
@@ -26,7 +40,7 @@ static void send_message_request(int val){
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "send_message complete");
 }
 
-// Called when a message is received from PebbleKitJS
+//Handles Messages from PebbleKit JS (phone) analyzing
 static void in_received_handler(DictionaryIterator *received, void *context) {
 	Tuple *tuple;
 	
@@ -43,8 +57,8 @@ static void in_received_handler(DictionaryIterator *received, void *context) {
 	
 	tuple = dict_find(received, MENUDATA_KEY);
 	if(tuple) {
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "Received MenuData: %s", tuple->value->cstring);
 		s_menu_data = tuple->value->cstring;
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Received MenuData: %s", s_menu_data);
 	}
   
 }

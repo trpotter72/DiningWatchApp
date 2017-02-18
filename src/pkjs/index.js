@@ -8,6 +8,9 @@ function sendMenuData(val) {
 	Pebble.sendAppMessage({"menudata": val}, messageSuccessHandler, messageFailureHandler);
 }
 
+function sendMenuData(val) {
+	Pebble.sendAppMessage({"menudata": val}, messageSuccessHandler, messageFailureHandler);
+}
 
 // Called when the message send attempt succeeds
 function messageSuccessHandler() {
@@ -34,6 +37,7 @@ Pebble.addEventListener("appmessage", function(e) {
 	if(dict['requestmenu']){
 		console.log("Received Message: " + dict.requestmenu);
 		sendMenuData("DaisyHillGrill,Food1,Food2,Food3,!BBQ Land,Food1,Food2,!");
+		sendMenuSize([4,5]);
 	}
   
 	if(dict['menudata']||dict['menusize']||dict['status']){
