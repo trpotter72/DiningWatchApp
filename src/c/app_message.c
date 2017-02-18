@@ -18,8 +18,8 @@ Pebble smart watch. Should function as follows:
 #include "StringSplitting.h"
 
 static Window *s_window;	
-static char* s_menu_data;
-static char** s_locations;
+char s_menu_data[1024];
+char** s_locations;
 
 // Keys for AppMessage Dictionary
 // These should correspond to the values you defined in appinfo.json/Settings
@@ -61,10 +61,10 @@ void in_received_handler(DictionaryIterator *received, void *context) {
 	
 	tuple = dict_find(received, MENUDATA_KEY);
 	if(tuple) {
-		s_menu_data = strdup(tuple->value->cstring);
+		strcpy(tuple->value->cstring,s_menu_data);
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "Received MenuData: %s", s_menu_data);
-		const char delim[2] = '!';
-		s_locations = str_split(s_menu_data, delim, 2);
+		const char delim[2] = "!";
+		s_locations = str_split(tuple->value->cstring, delim, 2);
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "Received MenuData outside of if: %s", s_menu_data);
 	}
   

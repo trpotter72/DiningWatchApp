@@ -61,15 +61,14 @@ char** str_split(char* a_str, const char a_delim)
     return result;
 }
 */
-char** str_split(char* a_str, const char a_delim, int eateries)
+char** str_split(char* a_str,const char* a_delim, int eateries)
 	{
-	char** formattedMenu[eateries];
-	char* token;
+	
+	char** formattedMenu = malloc(sizeof(char)*1024);
 	int i = 0;
-	token = strtok(a_str, a_delim);
-	while(token != NULL){
-		formattedMenu[i]=token;
-		token = strtok(NULL, a_delim);
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "Start string split");
+	for (char *token = strtok(a_str, a_delim); token != NULL; token = strtok(NULL, a_delim)){
+		formattedMenu[i] = strdup(token);
 		i++;
 	}
 	return formattedMenu;
