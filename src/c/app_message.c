@@ -11,11 +11,15 @@ Pebble smart watch. Should function as follows:
 */
 
 #include <pebble.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <assert.h>
 #include "StringSplitting.h"
 
 static Window *s_window;	
 static char* s_menu_data;
+static char** s_locations;
 
 // Keys for AppMessage Dictionary
 // These should correspond to the values you defined in appinfo.json/Settings
@@ -41,7 +45,7 @@ static void send_message_request(int val){
 }
 
 //Handles Messages from PebbleKit JS (phone) analyzing
-static void in_received_handler(DictionaryIterator *received, void *context) {
+void in_received_handler(DictionaryIterator *received, void *context) {
 	Tuple *tuple;
 	
 	tuple = dict_find(received, STATUS_KEY);
@@ -57,8 +61,11 @@ static void in_received_handler(DictionaryIterator *received, void *context) {
 	
 	tuple = dict_find(received, MENUDATA_KEY);
 	if(tuple) {
-		s_menu_data = tuple->value->cstring;
+		s_menu_data = strdup(tuple->value->cstring);
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "Received MenuData: %s", s_menu_data);
+		const char delim[2] = '!';
+		s_locations = str_split(s_menu_data, delim, 2);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Received MenuData outside of if: %s", s_menu_data);
 	}
   
 }
