@@ -20,6 +20,7 @@ Pebble smart watch. Should function as follows:
 static Window *s_window;	
 char s_menu_data[1024];
 char** s_locations;
+bool is_weekend;
 
 // Keys for AppMessage Dictionary
 // These should correspond to the values you defined in appinfo.json/Settings
@@ -27,7 +28,8 @@ enum {
 	STATUS_KEY = 0,	
 	REQUESTMENU_KEY = 1,
 	MENUDATA_KEY = 2,
-	MENUSIZE_KEY = 3
+	MENUSIZE_KEY = 3,
+	WEEKEND_KEY = 4
 };
 
 
@@ -51,7 +53,6 @@ void in_received_handler(DictionaryIterator *received, void *context) {
 	tuple = dict_find(received, STATUS_KEY);
 	if(tuple) {
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "Received Status: %d", (int)tuple->value->uint32);
-		send_message_request(1);
 	}
 	
 	tuple = dict_find(received, REQUESTMENU_KEY);
@@ -69,6 +70,15 @@ void in_received_handler(DictionaryIterator *received, void *context) {
 		APP_LOG(APP_LOG_LEVEL_DEBUG, s_locations[1]);
 	}
   
+	
+	tuple = dict_find(received, WEEKEND_KEY);
+	if(tuple) {
+		//strcpy(tuple->value->cstring,s_menu_data);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Received weekend: %i", tuple->value->int16);
+		is_weekend = tuple->value->int16;
+		send_message_request(1);
+		
+	}
 }
 
 // Called when an incoming message from PebbleKitJS is dropped
