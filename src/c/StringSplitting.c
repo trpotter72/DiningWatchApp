@@ -63,13 +63,63 @@ char** str_split(char* a_str, const char a_delim)
 */
 char** str_split(char* a_str,const char* a_delim, int eateries)
 	{
-	
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "Start string split");
 	char** formattedMenu = malloc(sizeof(char)*1024);
 	int i = 0;
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "Start string split");
-	for (char *token = strtok(a_str, a_delim); token != NULL; token = strtok(NULL, a_delim)){
+	
+	for (char *token = strtok_r(a_str, a_delim ,&a_str); token != NULL; token = strtok_r(NULL, a_delim, &a_str)){
 		formattedMenu[i] = strdup(token);
 		i++;
 	}
 	return formattedMenu;
 }
+
+char* strtok_r(char *s, const char *delim, char **lasts)
+ {
+         const char *spanp;
+         int c, sc;
+         char *tok;
+ 					
+         /* s may be NULL */
+         /*netsnmp_assert(delim != NULL);*/
+         /*netsnmp_assert(lasts != NULL);*/
+ 
+         if (s == NULL && (s = *lasts) == NULL)
+                 return (NULL);
+ 
+         /*
+          * Skip (span) leading delimiters (s += strspn(s, delim), sort of).
+          */
+ cont:
+         c = *s++;
+         for (spanp = delim; (sc = *spanp++) != 0;) {
+                 if (c == sc)
+                         goto cont;
+         }
+ 					
+         if (c == 0) {           /* no non-delimiter characters */
+                 *lasts = NULL;
+                 return (NULL);
+         }
+         tok = s - 1;
+ 
+         /*
+          * Scan token (scan for delimiters: s += strcspn(s, delim), sort of).
+          * Note that delim must have one NUL; we stop if we see that, too.
+          */
+         for (;;) {
+                 c = *s++;
+                 spanp = delim;
+                 do {
+                         if ((sc = *spanp++) == c) {
+                                 if (c == 0)
+                                         s = NULL;
+                                 else
+                                         s[-1] = 0;
+                                 *lasts = s;
+                                 return (tok);
+                         }
+                 } while (sc != 0);
+         }
+         /* NOTREACHED */
+ }

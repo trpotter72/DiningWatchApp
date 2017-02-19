@@ -61,11 +61,12 @@ void in_received_handler(DictionaryIterator *received, void *context) {
 	
 	tuple = dict_find(received, MENUDATA_KEY);
 	if(tuple) {
-		strcpy(tuple->value->cstring,s_menu_data);
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "Received MenuData: %s", s_menu_data);
+		//strcpy(tuple->value->cstring,s_menu_data);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Received MenuData: %s", tuple->value->cstring);
 		const char delim[2] = "!";
-		s_locations = str_split(tuple->value->cstring, delim, 2);
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "Received MenuData outside of if: %s", s_menu_data);
+		strcpy(s_menu_data, tuple->value->cstring);
+		s_locations = str_split(s_menu_data, delim, 2);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, s_locations[1]);
 	}
   
 }
