@@ -13,6 +13,7 @@ Pebble smart watch. Should function as follows:
 #include <pebble.h>
 
 #include "meal_window.h"
+#include "menu_window.h"
 #include "phone_comms.h"
 
 
@@ -20,6 +21,12 @@ Pebble smart watch. Should function as follows:
 static void init(void) {
 
 	main_window_create();
+	window_set_window_handlers(main_window_get_window(), (WindowHandlers) {
+    .load = main_window_load,
+    .unload = main_window_unload,
+  });
+	window_stack_push(main_window_get_window(), true);
+	
 	// Register AppMessage handlers
 	app_message_register_inbox_received(in_received_handler); 
 	app_message_register_inbox_dropped(in_dropped_handler); 

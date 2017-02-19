@@ -1,15 +1,17 @@
 #include <pebble.h>
 #include "meal_window.h"
+#include "phone_comms.h"
+#include "menu_window.h"
 
 Window* mainWindow;
 MenuLayer* mainMenuLayer;
 
 uint16_t main_get_num_sections_callback(MenuLayer *main_layer, void *data) {
-	return menuSize[0];
+	return 1;
 }
 
 uint16_t main_get_num_rows_callback(MenuLayer *main_layer, uint16_t section_index, void *data) {
-    return menuSize[section_index+1];
+    return 3;
 }
 
 int16_t main_get_header_height_callback(MenuLayer *main_layer, uint16_t section_index, void *data) {
@@ -17,15 +19,49 @@ int16_t main_get_header_height_callback(MenuLayer *main_layer, uint16_t section_
 }
 
 void main_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
+	menu_cell_basic_header_draw(ctx, cell_layer, "Mrs.E's Dining Center");
     
 }
 
 void main_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
+	switch (cell_index->row) {
+        case 0:
+          // This is a basic menu item with a title and subtitle
+          menu_cell_basic_draw(ctx, cell_layer, "Breakfast", "7 a.m. - 11 a.m.", NULL);
+          break;
+        case 1:
+          // This is a basic menu icon with a cycling icon
+          menu_cell_basic_draw(ctx, cell_layer, "Lunch", "11 a.m. - 4 p.m.", NULL);
+          break;
+        case 2: 
+          {
+					menu_cell_basic_draw(ctx, cell_layer, "Dinner", "4 p.m. - 7 p.m.", NULL);
+          }
+          break;
+      }
     
 }
 
 void main_select_callback(MenuLayer *main_layer, MenuIndex *cell_index, void *data) {
-	
+	switch (cell_index->row) {
+    // This is the menu item with the cycling icon
+    case 0:
+      // Cycle the icon
+ 			send_message_request(0);
+			menu_window_create(cell_index->row);
+			window_stack_push(menu_window_get_window(), true);
+      break;
+		case 1:
+		//	send_message_request(2);
+			menu_window_create(cell_index->row);
+			window_stack_push(menu_window_get_window(), true);
+			break;
+		case 2:
+			send_message_request(3);
+			menu_window_create(cell_index->row);
+			window_stack_push(menu_window_get_window(), true);
+			break;
+  }
 }
 
 void setup_menu_layer(Window *window) {
