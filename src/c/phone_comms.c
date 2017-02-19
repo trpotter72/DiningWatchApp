@@ -36,6 +36,8 @@ void in_received_handler(DictionaryIterator *received, void *context) {
 	tuple = dict_find(received, STATUS_KEY);
 	if(tuple) {
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "Received Status: %d", (int)tuple->value->uint32);
+		psleep(1000);
+		
 	}
 	
 	tuple = dict_find(received, REQUESTMENU_KEY);

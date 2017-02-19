@@ -7,8 +7,8 @@
         "displayName": "Woah",
         "enableMultiJS": true,
         "messageKeys": {
+            "menuSize": 3,
             "menudata": 2,
-            "menusize": 3,
             "requestmenu": 1,
             "status": 0,
             "weekend": 4

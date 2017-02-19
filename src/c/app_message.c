@@ -15,7 +15,7 @@ Pebble smart watch. Should function as follows:
 #include "meal_menu.h"
 #include "phone_comms.h"
 
-Window* s_window;
+static Window* s_window;
 
 static void init(void) {
 	s_window = window_create();

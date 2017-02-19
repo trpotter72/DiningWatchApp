@@ -1,4 +1,7 @@
+#ifndef PHONE_COMMS_H
+#define PHONE_COMMS_H
 #pragma once
+
 #include <pebble.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,3 +20,5 @@ void in_dropped_handler(AppMessageResult reason, void *context);
 
 // Called when PebbleKitJS does not acknowledge receipt of a message
 void out_failed_handler(DictionaryIterator *failed, AppMessageResult reason, void *context);
+
+#endif

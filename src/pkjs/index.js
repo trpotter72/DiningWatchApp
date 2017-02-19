@@ -72,7 +72,7 @@ var URL = menuURL + diningCenterURL + dateURL; //final url for request
 
 //Counters for station and item numbers
 var stations = 0;
-var foods = [];
+var foods = [1];
 
 //seperate menus and sorter function
 var menuBreakfast = [];
@@ -106,7 +106,8 @@ var mealSort = function(menu)
 				DinnerIter++;
 			}
 		}
-		console.log(menuDinner);
+		menuBrunch = JSON.stringify(arrayToString(menuBrunch));
+		menuDinner = JSON.stringify(arrayToString(menuDinner));
 	}
 	else
 	{	//Weekday Condition
@@ -137,17 +138,20 @@ var mealSort = function(menu)
 				DinnerIter++;
 			}
 		}
+		menuBreakfast = JSON.stringify(arrayToString(menuBreakfast));
+		menuLunch = JSON.stringify(arrayToString(menuLunch));
+		menuDinner = JSON.stringify(arrayToString(menuDinner));
 	}
-	menuBreakfast = JSON.stringify(arrayToString(menuBreakfast));
-	menuBrunch = JSON.stringify(arrayToString(menuBrunch));
-	menuLunch = JSON.stringify(arrayToString(menuLunch));
-	menuDinner = JSON.stringify(arrayToString(menuDinner));
+	
+	
+
 };
 
 function arrayToString(m)
 {
 	var stationIndex = 0; //for setting foods to the next index
 	var menuString = "";
+	console.log(m);
 	menuString = m[0][0] + "," + m[0][1];
 	for(var l = 1; l < m.length; l++)
 	{
@@ -161,6 +165,7 @@ function arrayToString(m)
 			menuString = menuString + "!" + m[l][0] + "," + m[l][1];
 			stations++;
 			stationIndex++;
+			foods[stationIndex] = 0;
 		}		
 	}
 	return(menuString);
@@ -178,7 +183,8 @@ var dataFormatting = function(data)
 // Create the request
 var menuRequest = new XMLHttpRequest();
 
-//Callback for when the request is completed
+
+
 menuRequest.onload = function() {
 	console.log("Got unsorted response:", this.responseText);
 	dataFormatting(this.responseText);
@@ -199,19 +205,19 @@ var dict = {
 
 var whichMeal = function(dictionary)
 {
-	if(dictionary.requestMenu === 0) //Statements assign menu contents
+	if(dictionary.requestmenu === 0) //Statements assign menu contents
 	{
 		return(menuBreakfast);
 	}
-	else if(dictionary.requestMenu == 1)
+	else if(dictionary.requestmenu == 1)
 	{
 		return(menuBrunch);
 	}
-	else if(dictionary.requestMenu == 2)
+	else if(dictionary.requestmenu == 2)
 	{
 		return(menuLunch);
 	}
-	else if(dictionary.requestMenu == 3)
+	else if(dictionary.requestmenu == 3)
 	{
 		return(menuDinner);
 	}
@@ -225,15 +231,17 @@ function findMenuSize(menu)
 	}
 	return(stringLength);
 }
+
+	
 //Listen for when the app is opened and then...
 Pebble.addEventListener('ready', function() {
-	
-	Pebble.sendAppMessage({'status': 1});
-	Pebble.sendAppMessage({'weekend': weekendBool});	//sends T/F for weekend
-	// Send the request for the full menu
 	menuRequest.open(method, URL);
 	console.log("The request has been sent");
 	menuRequest.send();
+	Pebble.sendAppMessage({'status': 1});
+	Pebble.sendAppMessage({'weekend': weekendBool});	//sends T/F for weekend
+	// Send the request for the full menu
+
 
 });
 //Listen for the meal selection
@@ -241,7 +249,12 @@ Pebble.addEventListener('appmessage', function(e) {
 	// Get the dictionary from the message
 	var dict = e.payload;
 	console.log('Got message: ' + JSON.stringify(dict));
-	Pebble.sendAppMessage({'menuData': whichMeal(dict),		//Sends corret menu
+	if(dict.requestmenu){
+		console.log(whichMeal(dict));
+		console.log(findMenuSize(whichMeal(dict)));
+		console.log(foods);
+	Pebble.sendAppMessage({'menudata': whichMeal(dict),		//Sends corret menu
 						   'menuSize': findMenuSize(whichMeal(dict))	//and length of correct menu
-						  });
+											});
+	}
 });
