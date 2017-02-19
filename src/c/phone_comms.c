@@ -4,6 +4,7 @@
 char s_menu_data[1024];
 char** s_locations;
 bool is_weekend;
+int menuSize;
 
 // Keys for AppMessage Dictionary
 // These should correspond to the values you defined in appinfo.json/Settings
@@ -55,6 +56,12 @@ void in_received_handler(DictionaryIterator *received, void *context) {
 		APP_LOG(APP_LOG_LEVEL_DEBUG, s_locations[1]);
 	}
   
+	tuple = dict_find(received, MENUSIZE_KEY);
+	if(tuple) {
+		//strcpy(tuple->value->cstring,s_menu_data);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Received weekend: %i", tuple->value->int16);
+		menuSize = tuple->value->int16;		
+	}
 	
 	tuple = dict_find(received, WEEKEND_KEY);
 	if(tuple) {

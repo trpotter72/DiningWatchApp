@@ -12,29 +12,29 @@ Pebble smart watch. Should function as follows:
 
 #include <pebble.h>
 
-#include "meal_menu.h"
+#include "meal_window.h"
 #include "phone_comms.h"
 
-static Window* s_window;
+
 
 static void init(void) {
-	s_window = window_create();
-	window_stack_push(s_window, true);
-	
+
+	main_window_create();
 	// Register AppMessage handlers
 	app_message_register_inbox_received(in_received_handler); 
 	app_message_register_inbox_dropped(in_dropped_handler); 
 	app_message_register_outbox_failed(out_failed_handler);
 
   // Initialize AppMessage inbox and outbox buffers with a suitable size
-  const int inbox_size = 2048;
+  const int inbox_size = 4096;
   const int outbox_size = 256;
 	app_message_open(inbox_size, outbox_size);
 }
 
 static void deinit(void) {
 	app_message_deregister_callbacks();
-	window_destroy(s_window);
+	main_window_destroy(main_window_get_window());
+	
 }
 
 int main( void ) {

@@ -1,58 +1,3 @@
-// Function to send a message to the Pebble using AppMessage API
-// We are currently only sending a message using the "status" appKey defined in appinfo.json/Settings
-
-/*
-function sendStatus(val) {
-	Pebble.sendAppMessage({"status": val}, messageSuccessHandler, messageFailureHandler);
-}
-
-// Called when the message send attempt succeeds
-function messageSuccessHandler() {
-  console.log("Message send succeeded.");  
-}
-
-// Called when the message send attempt fails
-function messageFailureHandler() {
-  console.log("Message send failed.");
-  sendStatus(1);
-}
-
-// Called when JS is ready
-Pebble.addEventListener("ready", function(e) {
-  console.log("JS is ready!");
-  sendStatus(1);
-});
-												
-// Called when incoming message from the Pebble is received
-// We are currently only checking the "message" appKey defined in appinfo.json/Settings
-Pebble.addEventListener("appmessage", function(e) {
-	var dict = e.payload;
-	console.log("Message heard from phone... analyzing dictionary\n" + "status: " + dict.status + "\nrequestmenu: " + dict.requestmenu + "\nmenudata: " + dict.menudata + "\nmenusize: "+ dict.menusize );
-	if(dict['requestmenu']){
-		console.log("Received Message: " + dict.requestmenu);
-		sendMenuData("DaisyHillGrill,Food1,Food2,Food3,!BBQ Land,Food1,Food2,!");
-	}
-  
-	if(dict['menudata']||dict['menusize']||dict['status']){
-		console.log("Watch sent an invlaid  KEY ");
-	}
-});
-
-
-
-*/
-//
-//
-///
-///
-
-//GAGE
-
-///
-///
-//
-//
-
 var menuURL = "https://dept.ku.edu/~union/cgi-bin/wordpress/dining-menus/ku-dining-menus.php?";
 var method = "GET";
 
@@ -72,7 +17,7 @@ var URL = menuURL + diningCenterURL + dateURL; //final url for request
 
 //Counters for station and item numbers
 var stations = 0;
-var foods = [1];
+var foods = [0];
 
 //seperate menus and sorter function
 var menuBreakfast = [];
@@ -106,7 +51,9 @@ var mealSort = function(menu)
 				DinnerIter++;
 			}
 		}
+		console.log(arrayToString(menuBrunch));
 		menuBrunch = JSON.stringify(arrayToString(menuBrunch));
+		console.log(menuBrunch);
 		menuDinner = JSON.stringify(arrayToString(menuDinner));
 	}
 	else
@@ -153,21 +100,28 @@ function arrayToString(m)
 	var menuString = "";
 	console.log(m);
 	menuString = m[0][0] + "," + m[0][1];
+	foods = []; //resets for future runs
+	foods[stationIndex] = 1;
 	for(var l = 1; l < m.length; l++)
 	{
 		if(m[l][0] == m[l - 1][0])
 		{
 			menuString = menuString + "," + m[l][1];
-			foods[stationIndex]++;
+			foods[stationIndex] = (foods[stationIndex] + 1);
 		}
 		else
 		{
 			menuString = menuString + "!" + m[l][0] + "," + m[l][1];
 			stations++;
 			stationIndex++;
-			foods[stationIndex] = 0;
-		}		
+			foods[stationIndex] = 1;
+		}
 	}
+	for(var n = 0; n < foods.length; n++)
+		{
+			foods[n] = (foods[n] + 1);	//foods is 1 short on all values, so this adds one to all values
+		}
+	console.log("foods: ", foods);
 	return(menuString);
 }
 
@@ -196,8 +150,8 @@ menuRequest.onload = function() {
 /*
 var dict = {
 	"status": 0,
-	"requestMenu": 0,
-	"menuData": "",
+	"requestmenu": 0,
+	"menudata": "",
 	"menuSize": 0,
 	"weekend": 0
 };
@@ -224,7 +178,7 @@ var whichMeal = function(dictionary)
 };
 function findMenuSize(menu)
 {
-	var stringLength = [stations];
+	var stringLength = [foods.length];
 	for(var m = 0; m < foods.length; m++)
 	{
 		stringLength[m + 1] = foods[m];
@@ -252,7 +206,6 @@ Pebble.addEventListener('appmessage', function(e) {
 	if(dict.requestmenu){
 		console.log(whichMeal(dict));
 		console.log(findMenuSize(whichMeal(dict)));
-		console.log(foods);
 	Pebble.sendAppMessage({'menudata': whichMeal(dict),		//Sends corret menu
 						   'menuSize': findMenuSize(whichMeal(dict))	//and length of correct menu
 											});
